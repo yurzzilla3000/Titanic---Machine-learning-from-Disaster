@@ -1,4 +1,9 @@
 from pandas import *
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+
+
 
 db = read_csv("train.csv") 
 
@@ -23,4 +28,16 @@ db["Sex"] = db["Sex"].astype(int)
 db["Age"].fillna(db["Age"].median(), inplace=True)
 db["Age"] = db["Age"].round().astype(int)
 
-print(db.info())
+
+x = db.drop("Survived", axis=1)
+y = db["Survived"]
+x_train,x_test,y_train,y_test = train_test_split(x,y, test_size=0.2, random_state=1)
+
+predictor = RandomForestClassifier(n_estimators=350, max_depth=None, min_samples_leaf=1, min_samples_split=2, random_state=1)
+
+predictor.fit(x_train, y_train)
+
+y_pred = predictor.predict(x_test)
+
+print("Accuracy: ", accuracy_score(y_test, y_pred))
+
